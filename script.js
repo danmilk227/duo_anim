@@ -1,5 +1,5 @@
 const screenEl = document.getElementById('screen');
-const blurLayer = document.querySelector('.layer-blur');
+const blurContainer = document.querySelector('.layer-blur-container');
 const shadowLayer = document.querySelector('.layer-shadow');
 const startOverlay = document.getElementById('start-overlay');
 const startBtn = document.getElementById('start-btn');
@@ -49,12 +49,12 @@ function animate() {
     const maskGradient = `linear-gradient(${cssGradientAngle}deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%)`;
     const shadowGradient = `linear-gradient(${cssGradientAngle}deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%)`;
 
-    blurLayer.style.webkitMaskImage = maskGradient;
-    blurLayer.style.maskImage = maskGradient;
+    blurContainer.style.webkitMaskImage = maskGradient;
+    blurContainer.style.maskImage = maskGradient;
     shadowLayer.style.background = shadowGradient;
 
     // Apply opacities
-    blurLayer.style.opacity = progress;
+    blurContainer.style.opacity = progress;
     shadowLayer.style.opacity = progress * 0.8; // Max shadow 0.8 opacity
 
     // Continue loop
@@ -104,6 +104,15 @@ function handleOrientation(event) {
 
 // Start button for mobile (iOS requires user interaction to request permission)
 startBtn.addEventListener('click', async () => {
+    // Request Fullscreen
+    if (!document.fullscreenElement) {
+        try {
+            await document.documentElement.requestFullscreen();
+        } catch (err) {
+            console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+        }
+    }
+
     // Hide overlay
     startOverlay.style.opacity = '0';
     setTimeout(() => {
