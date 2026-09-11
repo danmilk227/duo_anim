@@ -21,8 +21,8 @@ function animate() {
     currentTilt += (targetTilt - currentTilt) * LERP_FACTOR;
 
     // Apply rotation to the screen
-    // We rotate backwards (negative X) so the top moves away
-    screenEl.style.transform = `rotateX(${-currentTilt}deg)`;
+    // We rotate forwards (positive X) so the top tilts away from the viewer in 3D perspective
+    screenEl.style.transform = `rotateX(${currentTilt}deg)`;
 
     // Calculate opacity based on tilt (0 to 1)
     // When tilt is 0, opacity is 0. When tilt is MAX_TILT, opacity is 1.
