@@ -24,14 +24,22 @@ body, html {
     transform-style: preserve-3d;
 }
 
-#screen {
+#wrapper {
     width: 100%;
     height: 100%;
     position: relative;
-    /* Rotate around the center instead of bottom to allow full 360 degree 2-axis tilting */
     transform-origin: center center;
     transform: rotateX(0deg) rotateY(0deg);
     will-change: transform;
+    transform-style: preserve-3d;
+}
+
+#screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     overflow: hidden;
     background: #111;
 }
@@ -64,23 +72,51 @@ body, html {
 .layer-blur-container {
     z-index: 2;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0; /* JS will change this */
-    will-change: opacity, mask-image, -webkit-mask-image;
+    /* Expanding beyond 100% to let the blur bleed past the sharp edges */
+    top: -15%;
+    left: -15%;
+    width: 130%;
+    height: 130%;
+    will-change: mask-image, -webkit-mask-image;
     /* JS will update the angle of this gradient */
     -webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
     mask-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
     pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Blurred overlay */
 .layer-blur {
-    /* Direct blur filter on the inherited background image works better than backdrop-filter */
-    filter: blur(15px);
-    /* We don't apply opacity or mask-image directly to the element with filter to prevent rendering bugs on some OSes */
+    position: relative;
+    /* Reverting size to match the screen exactly */
+    width: 76.923%; /* 100 / 130 */
+    height: 76.923%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.layer-blur::before {
+    content: '';
+    position: absolute;
+    top: -5%; /* Add slight overscroll room */
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background-image: url('landscape.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(40px); /* Larger blur for stronger DoF effect */
+    transform: scale(1.1); /* Prevent blur fading at the very edges of the element */
+}
+
+@media (orientation: portrait) {
+    .layer-blur::before {
+        background-image: url('portrait.jpg');
+    }
 }
 
 /* Shadow overlay to simulate depth */

@@ -1,4 +1,4 @@
-const screenEl = document.getElementById('screen');
+const wrapperEl = document.getElementById('wrapper');
 const blurContainer = document.querySelector('.layer-blur-container');
 const shadowLayer = document.querySelector('.layer-shadow');
 const startOverlay = document.getElementById('start-overlay');
@@ -24,14 +24,14 @@ function animate() {
     currentTiltX += (targetTiltX - currentTiltX) * LERP_FACTOR;
     currentTiltY += (targetTiltY - currentTiltY) * LERP_FACTOR;
 
-    // Apply rotation to the screen
+    // Apply rotation to the wrapper (which contains both screen and blur)
     // rotateX handles up/down tilt (beta), rotateY handles left/right tilt (gamma)
-    screenEl.style.transform = `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
+    wrapperEl.style.transform = `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
 
-    // Calculate total tilt magnitude to determine opacity
+    // Calculate total tilt magnitude to determine intensity
     const magnitude = Math.sqrt(currentTiltX * currentTiltX + currentTiltY * currentTiltY);
 
-    // Calculate opacity based on tilt (0 to 1)
+    // Calculate intensity based on tilt (0 to 1) - used for mask boundaries
     const progress = Math.max(0, Math.min(1, magnitude / MAX_TILT));
 
     // Calculate gradient angle based on current tilt direction
@@ -45,16 +45,22 @@ function animate() {
     // Adjust gradient angle for CSS linear-gradient
     let cssGradientAngle = angleDeg;
 
+    // Instead of using opacity, we change the bounds of the mask to push it over the screen
+    // The mask starts off-screen (100% to 150%) and slides onto the screen (0% to 60%) as tilt increases
+    // Using a non-linear ease for the progress to make it kick in faster
+    const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+
+    const maskStart = 100 - (easeProgress * 100);
+    const maskEnd = 150 - (easeProgress * 90);
+
     // Update masks and shadows with dynamic gradient angle
-    const maskGradient = `linear-gradient(${cssGradientAngle}deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%)`;
+    const maskGradient = `linear-gradient(${cssGradientAngle}deg, rgba(0,0,0,1) ${maskStart}%, rgba(0,0,0,0) ${maskEnd}%)`;
     const shadowGradient = `linear-gradient(${cssGradientAngle}deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%)`;
 
     blurContainer.style.webkitMaskImage = maskGradient;
     blurContainer.style.maskImage = maskGradient;
-    shadowLayer.style.background = shadowGradient;
 
-    // Apply opacities
-    blurContainer.style.opacity = progress;
+    shadowLayer.style.background = shadowGradient;
     shadowLayer.style.opacity = progress * 0.8; // Max shadow 0.8 opacity
 
     // Continue loop
