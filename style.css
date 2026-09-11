@@ -1,0 +1,133 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: white;
+}
+
+#scene {
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-style: preserve-3d;
+}
+
+#screen {
+    width: 100%;
+    height: 100%;
+    max-width: 500px; /* Constrain for desktop view */
+    position: relative;
+    /* Important for fold effect: anchor rotation at the bottom */
+    transform-origin: center bottom;
+    transform: rotateX(0deg);
+    /* For smooth CSS transition when not moving, though JS will lerp this */
+    will-change: transform;
+    overflow: hidden;
+    background: #111;
+}
+
+/* Background image URL (Mountains) */
+:root {
+    --bg-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+}
+
+.bg {
+    position: absolute;
+    top: -5%; /* Add slight overscroll room */
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+/* Base sharp image */
+.layer-sharp {
+    z-index: 1;
+}
+
+/* Blurred image overlay */
+.layer-blur {
+    z-index: 2;
+    filter: blur(20px);
+    opacity: 0; /* JS will change this */
+    will-change: opacity;
+    /* Mask the blur so it only appears at the top half */
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);
+}
+
+/* Shadow overlay to simulate depth */
+.layer-shadow {
+    z-index: 3;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%);
+    opacity: 0; /* JS will change this */
+    will-change: opacity;
+}
+
+/* Overlay for permission */
+#start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.5s ease;
+}
+
+.start-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.start-content h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.start-content p {
+    font-size: 16px;
+    color: #ccc;
+    margin-bottom: 25px;
+}
+
+button {
+    background: #007aff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #0056b3;
+}
