@@ -8,10 +8,14 @@
 </head>
 <body>
     <div id="scene">
-        <div id="screen">
-            <div class="bg layer-sharp"></div>
-            <div class="layer-blur" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
-            <div class="bg layer-shadow"></div>
+        <div id="wrapper">
+            <div id="screen">
+                <div class="bg layer-sharp"></div>
+            </div>
+            <div class="layer-blur-container">
+                <div class="bg layer-blur"></div>
+            </div>
+            <div class="layer-shadow"></div>
         </div>
     </div>
 
@@ -19,7 +23,7 @@
         <div class="start-content">
             <h1>Foldable Perspective Effect</h1>
             <p>Move your mouse or tilt your device to see the effect.</p>
-            <button id="start-btn">Enable Gyroscope</button>
+            <button id="start-btn">Start (Fullscreen & Gyroscope)</button>
         </div>
     </div>
 
